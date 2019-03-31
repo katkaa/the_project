@@ -3,35 +3,32 @@
 <head>
   <meta charset="utf-8">
   <title>YELLOW DOTS</title>
-  <link rel="stylesheet" href="assets/demo.css">
 
   <script src="build/tracking-min.js"></script>
   <script src="node_modules/dat.gui/build/dat.gui.min.js"></script>
-  <script src="assets/stats.min.js"></script>
   <script src="assets/color_camera_gui.js"></script>
 
   <style>
   video, canvas {
-    margin-left: 100px;
-    margin-top: 35px;
     position: absolute;
   }
   </style>
+
 </head>
 <body>
-  <div class="demo-title">
-    <p><a href="http://trackingjs.com" target="_parent">tracking.js</a> － choose the colors you want to detect through the controls on the right</p>
-  </div>
-
-  <div class="demo-frame">
-    <div class="demo-container">
-      <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
-      <canvas id="canvas" width="600" height="450"></canvas>
-    </div>
-  </div>
+  <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
+  <canvas id="canvas" width="600" height="450"></canvas>
+  <span style="margin-top:500px; position:absolute;" id="test_text"></span>
+  <img width="300" height="300" src="data/dot.jpg" style="margin-top:500px; position:absolute;" id="test_img"></span>
 
   <script>
     window.onload = function() {
+      var test_arrays = [];
+      var test_text = document.querySelector("#test_text");
+      var test_img = document.querySelector("#test_img");
+      test_text.innerHTML = "HENLO";
+
+
       var video = document.getElementById('video');
       var canvas = document.getElementById('canvas');
       var context = canvas.getContext('2d');
@@ -42,6 +39,8 @@
 
       tracker.on('track', function(event) {
         context.clearRect(0, 0, canvas.width, canvas.height);
+
+        test_array = [];
 
         event.data.forEach(function(rect) {
           if (rect.color === 'custom') {
@@ -54,11 +53,49 @@
           context.fillStyle = "#fff";
           context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
           context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+
+          test_array.push([rect.x,rect.y]);
         });
+
+        test_id = check(test_array);
+        test_set(test_img,test_id);
       });
 
      initGUIControllers(tracker);
     };
+
+    function check(array) {
+
+      if (array.length == 2) {
+
+        var xdif = Math.abs( array[0][0] - array[1][0] );
+        var ydif = Math.abs( array[0][1] - array[1][1] );
+
+        if (xdif > ydif) {
+
+          return 1;
+
+        } else {
+
+          return 2;
+
+        }
+
+      }
+
+      return 0;
+    }
+
+    function test_set(img,id) {
+      if (id==0) {
+        img.src = "data/dot.jpg";
+      } else if (id == 1) {
+        img.src = "data/cat.jpg";
+      } else if (id == 2) {
+        img.src = "data/dog.jpg";
+      }
+    }
+
   </script>
 
 </body>
