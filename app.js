@@ -49,7 +49,7 @@ window.onload = function() {
 	resize_canvas(canvas, video);
 
 	var colors = new tracking.ColorTracker(["yellow"]);
-	colors.minDimension = 1;
+	colors.minDimension = 10;
 	colors.on("track", function(event) {
 		resize_canvas(canvas, video);
 		ctx.clearRect(0,0,canvas.width,canvas.height);
