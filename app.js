@@ -28,7 +28,7 @@ function grab() {
     cameraOutput.classList.add("taken");
 }
 
-function resize_canvas(canvas, video, normvars) {
+function resize_canvas(canvas, video) {
   var displayWidth  = canvas.clientWidth;
   var displayHeight = canvas.clientHeight;
  
@@ -36,54 +36,27 @@ function resize_canvas(canvas, video, normvars) {
   if (canvas.width  != displayWidth ||
       canvas.height != displayHeight) {
  
- 	console.log("resizing");
     // Make the canvas the same size
     canvas.width  = displayWidth;
     canvas.height = displayHeight;
-
-    n = get_normvars([video.videoWidth, video.videoHeight], [displayWidth, displayHeight]);
-    normvars.s = n.s;
-    normvars.o = n.o;
   }
-}
-
-function get_normvars(videoSize, canvasSize) {
-	var canvasR = canvasSize[0] / canvasSize[1];
-	var videoR = videoSize[0] / videoSize[1];
-	var scaleRatio;
-	if (canvasR < videoR) {
-		scaleRatio = videoSize[1]/canvasSize[1];
-	} else {
-		scaleRatio = videoSize[0]/canvasSize[0];
-	}
-	var offset = [-((videoSize[0]*scaleRatio)-canvasSize[0])/2, 0];
-	n = {s: scaleRatio, o: offset};
-	return n;
-}
-
-function norm_vals(rect,normvars) {
-	rect = rect * normvars.s;
-	rect = rect + normvars.o;
-	return rect;
 }
 
 window.onload = function() {
 	console.log("Hi");
 	cameraStart(video);
 	var ctx = canvas.getContext("2d");
-	var normvars = get_normvars([video.videoWidth, video.videoHeight], [canvas.displayWidth, canvas.displayHeight]);
-	resize_canvas(canvas, video, normvars);
+	resize_canvas(canvas, video);
 
 	var colors = new tracking.ColorTracker(["yellow"]);
 	colors.on("track", function(event) {
-		resize_canvas(canvas, video, normvars);
+		resize_canvas(canvas, video);
 		ctx.clearRect(0,0,canvas.width,canvas.height);
 		if (event.data.length === 0) {
 
 		} else {
-			console.log(normvars);
 			event.data.forEach(function(rect) {
-				rect = norm_vals(rect,normvars);
+				ctx.strokeStyle = "yellow";
 				ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
 			});
 		}
